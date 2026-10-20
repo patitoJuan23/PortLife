@@ -1,0 +1,605 @@
+{% extends 'base.html' %}
+
+{% block title %}PortLife | {{ profile.full_name }} — Estudiante de Ingeniería Informática{% endblock %}
+
+{% block content %}
+
+<!-- ==========================================
+     1. SECCIÓN INICIO (HERO)
+     ========================================== -->
+<section id="inicio" class="hero-section">
+    <div class="container">
+        <div class="row align-items-center gy-5">
+            <div class="col-lg-7 text-center text-lg-start">
+                <div class="section-tag mb-3">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    <span>Portafolio Académico & Profesional</span>
+                </div>
+                
+                <h1 class="display-4 fw-bold mb-3 font-heading">
+                    Hola, soy <span class="text-gradient">{{ profile.full_name }}</span>
+                </h1>
+                
+                <h2 class="h4 text-cyan fw-semibold mb-3">
+                    {{ profile.title }}
+                </h2>
+
+                <p class="lead text-secondary mb-4" style="max-width: 600px;">
+                    {{ profile.short_intro }}
+                </p>
+
+                <!-- Datos académicos rápidos -->
+                <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start mb-4">
+                    <span class="badge bg-secondary-subtle text-light border border-secondary p-2 px-3 rounded-pill">
+                        <i class="bi bi-buildings me-1 text-cyan"></i> {{ profile.university }}
+                    </span>
+                    <span class="badge bg-secondary-subtle text-light border border-secondary p-2 px-3 rounded-pill">
+                        <i class="bi bi-cpu me-1 text-cyan"></i> {{ profile.career }}
+                    </span>
+                    <span class="badge bg-secondary-subtle text-light border border-secondary p-2 px-3 rounded-pill">
+                        <i class="bi bi-calendar3 me-1 text-cyan"></i> {{ profile.semester }}
+                    </span>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                    <a href="#proyectos" class="btn-electric" id="btn-hero-projects">
+                        <i class="bi bi-code-square"></i> Ver Proyectos
+                    </a>
+                    <a href="#contacto" class="btn-glass" id="btn-hero-contact">
+                        <i class="bi bi-envelope"></i> Contactar
+                    </a>
+                    {% if profile.github_url %}
+                        <a href="{{ profile.github_url }}" target="_blank" rel="noopener noreferrer" class="btn-glass" id="btn-hero-github" title="Repositorios">
+                            <i class="bi bi-github"></i> GitHub
+                        </a>
+                    {% endif %}
+                </div>
+
+                <!-- Estadísticas rápidas -->
+                <div class="hero-stats">
+                    <div class="stat-item text-center text-lg-start">
+                        <h3>{{ projects|length }}+</h3>
+                        <p>Proyectos Clave</p>
+                    </div>
+                    <div class="stat-item text-center text-lg-start">
+                        <h3>{{ skills|length }}+</h3>
+                        <p>Tecnologías</p>
+                    </div>
+                    <div class="stat-item text-center text-lg-start">
+                        <h3>{{ profile.semester.split('.')[0] if '.' in profile.semester else '6' }}°</h3>
+                        <p>Semestre Actual</p>
+                    </div>
+                    <div class="stat-item text-center text-lg-start">
+                        <h3>100%</h3>
+                        <p>Compromiso</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Avatar del estudiante con elementos flotantes -->
+            <div class="col-lg-5 text-center">
+                <div class="hero-avatar-wrapper">
+                    <img src="{{ profile.avatar_url }}" alt="Fotografía de {{ profile.full_name }}" class="hero-avatar img-fluid">
+                    
+                    <!-- Elemento flotante 1: Python/Flask -->
+                    <div class="floating-badge badge-pos-1">
+                        <i class="bi bi-code-slash text-cyan fs-5"></i>
+                        <span>Python & Flask</span>
+                    </div>
+
+                    <!-- Elemento flotante 2: Estado Estudiante -->
+                    <div class="floating-badge badge-pos-2">
+                        <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                        <span>Ing. Informática</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ==========================================
+     2. SECCIÓN INFORMACIÓN PERSONAL (SOBRE MÍ)
+     ========================================== -->
+<section id="sobre-mi" class="section-padding bg-secondary-subtle" style="background-color: var(--bg-secondary) !important;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-tag">
+                <i class="bi bi-person-badge-fill"></i>
+                <span>Información Personal</span>
+            </div>
+            <h2 class="section-title">Sobre Mí & Perfil Profesional</h2>
+            <p class="section-subtitle">
+                Conoce mi trayectoria académica en Ingeniería Informática, mis objetivos y mi enfoque de desarrollo de software.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Ficha Académica y de Contacto -->
+            <div class="col-lg-4">
+                <div class="tech-card">
+                    <h3 class="h5 fw-bold mb-4 text-cyan border-bottom pb-2 border-secondary">
+                        <i class="bi bi-mortarboard me-2"></i> Datos Académicos
+                    </h3>
+
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-3">
+                            <span class="text-secondary small d-block">Estudiante</span>
+                            <strong class="text-light fs-6">{{ profile.full_name }}</strong>
+                        </li>
+                        <li class="mb-3">
+                            <span class="text-secondary small d-block">Carrera Universitaria</span>
+                            <strong class="text-light fs-6">{{ profile.career }}</strong>
+                        </li>
+                        <li class="mb-3">
+                            <span class="text-secondary small d-block">Universidad</span>
+                            <strong class="text-light fs-6">{{ profile.university }}</strong>
+                        </li>
+                        <li class="mb-3">
+                            <span class="text-secondary small d-block">Nivel Académico</span>
+                            <span class="badge bg-primary text-light px-3 py-1">{{ profile.semester }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="text-secondary small d-block">Ubicación</span>
+                            <span class="text-light"><i class="bi bi-geo-alt text-cyan me-1"></i> {{ profile.location }}</span>
+                        </li>
+                    </ul>
+
+                    <div class="border-top border-secondary pt-3">
+                        <span class="text-secondary small d-block mb-2">Canales Profesionales:</span>
+                        <div class="d-flex gap-2">
+                            {% if profile.github_url %}
+                                <a href="{{ profile.github_url }}" target="_blank" rel="noopener noreferrer" class="social-circle-link" title="GitHub">
+                                    <i class="bi bi-github"></i>
+                                </a>
+                            {% endif %}
+                            {% if profile.linkedin_url %}
+                                <a href="{{ profile.linkedin_url }}" target="_blank" rel="noopener noreferrer" class="social-circle-link" title="LinkedIn">
+                                    <i class="bi bi-linkedin"></i>
+                                </a>
+                            {% endif %}
+                            <a href="#contacto" class="social-circle-link" title="Enviar Mensaje">
+                                <i class="bi bi-envelope"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Perfil, Objetivos e Intereses -->
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    <!-- Biografía -->
+                    <div class="col-12">
+                        <div class="tech-card">
+                            <h3 class="h5 fw-bold mb-3 text-cyan">
+                                <i class="bi bi-card-text me-2"></i> Presentación & Perfil
+                            </h3>
+                            <p class="text-light mb-0" style="line-height: 1.8;">
+                                {{ profile.bio }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Objetivos Profesionales -->
+                    <div class="col-md-6">
+                        <div class="tech-card">
+                            <h3 class="h5 fw-bold mb-3 text-cyan">
+                                <i class="bi bi-compass-fill me-2"></i> Objetivos Profesionales
+                            </h3>
+                            <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                                {{ profile.objectives }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Enfoque e Intereses Personales -->
+                    <div class="col-md-6">
+                        <div class="tech-card">
+                            <h3 class="h5 fw-bold mb-3 text-cyan">
+                                <i class="bi bi-stars me-2"></i> Enfoque Disciplinar
+                            </h3>
+                            <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                                {{ profile.interests_text }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ==========================================
+     3. SECCIÓN ESTUDIOS REALIZADOS
+     ========================================== -->
+<section id="estudios" class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-tag">
+                <i class="bi bi-journal-bookmark-fill"></i>
+                <span>Educación & Trayectoria</span>
+            </div>
+            <h2 class="section-title">Estudios Realizados</h2>
+            <p class="section-subtitle">
+                Recorrido de formación académica formal, certificaciones técnicas y profundizaciones especializadas.
+            </p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="timeline-track">
+                    {% for study in studies %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker">
+                                <i class="bi {{ 'bi-book-half' if study.is_current else 'bi-check2' }}"></i>
+                            </div>
+                            <div class="tech-card">
+                                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                                    <h3 class="h5 fw-bold text-light mb-0">{{ study.degree }}</h3>
+                                    <span class="badge {{ 'bg-success' if study.is_current else 'bg-primary' }} rounded-pill">
+                                        {{ study.status }}
+                                    </span>
+                                </div>
+                                <div class="d-flex flex-wrap gap-3 text-secondary small mb-3">
+                                    <span><i class="bi bi-building text-cyan me-1"></i> {{ study.institution }}</span>
+                                    <span><i class="bi bi-calendar-event text-cyan me-1"></i> {{ study.period }}</span>
+                                </div>
+                                {% if study.description %}
+                                    <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                                        {{ study.description }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ==========================================
+     4. SECCIÓN PROYECTOS
+     ========================================== -->
+<section id="proyectos" class="section-padding bg-secondary-subtle" style="background-color: var(--bg-secondary) !important;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-tag">
+                <i class="bi bi-layers-fill"></i>
+                <span>Portafolio Práctico</span>
+            </div>
+            <h2 class="section-title">Proyectos Desarrollados</h2>
+            <p class="section-subtitle">
+                Soluciones web funcionales con backend en Flask, bases de datos estructuradas y diseño moderno responsive.
+            </p>
+
+            <!-- Filtros de Categorías -->
+            <div class="d-flex flex-wrap justify-content-center gap-2 mt-4" id="projectFilterContainer">
+                <button class="btn btn-sm btn-electric project-filter-btn active" data-filter="all">Todos</button>
+                <button class="btn btn-sm btn-glass project-filter-btn" data-filter="Salud">Salud Digital</button>
+                <button class="btn btn-sm btn-glass project-filter-btn" data-filter="Gestión">Gestión</button>
+                <button class="btn btn-sm btn-glass project-filter-btn" data-filter="Social">Bienestar Social</button>
+            </div>
+        </div>
+
+        <!-- Grid de Proyectos Dinámicos -->
+        <div class="row g-4" id="projectsGrid">
+            {% for project in projects %}
+                <div class="col-md-6 col-lg-4 project-grid-item" data-category="{{ project.category }}">
+                    <div class="project-card">
+                        <div class="project-img-wrapper">
+                            <img src="{{ project.image_url }}" alt="Vista previa de {{ project.title }}" class="project-img" loading="lazy">
+                            
+                            <!-- Badge de estado del proyecto -->
+                            {% set status_class = 'status-desarrollo' %}
+                            {% if 'Culminado' in project.status %}
+                                {% set status_class = 'status-culminado' %}
+                            {% elif 'Prototipo' in project.status %}
+                                {% set status_class = 'status-prototipo' %}
+                            {% endif %}
+                            <span class="project-badge-status {{ status_class }}">
+                                {{ project.status }}
+                            </span>
+                        </div>
+
+                        <div class="project-content">
+                            <div class="text-cyan small fw-semibold text-uppercase letter-spacing-1 mb-1">
+                                {{ project.category }}
+                            </div>
+                            <h3 class="h5 fw-bold text-light mb-2">{{ project.title }}</h3>
+                            <p class="text-secondary small mb-3">
+                                {{ project.short_desc }}
+                            </p>
+
+                            <!-- Tecnologías -->
+                            <div class="project-tech-badges">
+                                {% for tech in project.get_tech_list() %}
+                                    <span class="tech-badge">{{ tech }}</span>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="project-actions pt-3 border-top border-secondary">
+                                <button type="button" class="btn btn-sm btn-electric flex-grow-1 btn-project-detail" data-id="{{ project.id }}">
+                                    <i class="bi bi-info-circle"></i> Detalles
+                                </button>
+                                {% if project.github_url %}
+                                    <a href="{{ project.github_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-glass" title="Código fuente en GitHub">
+                                        <i class="bi bi-github"></i>
+                                    </a>
+                                {% endif %}
+                                {% if project.demo_url %}
+                                    <a href="{{ project.demo_url }}" class="btn btn-sm btn-glass btn-project-detail" data-id="{{ project.id }}" title="Demostración">
+                                        <i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<!-- ==========================================
+     5. SECCIÓN LENGUAJES Y TECNOLOGÍAS
+     ========================================== -->
+<section id="habilidades" class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-tag">
+                <i class="bi bi-code-slash"></i>
+                <span>Stack Tecnológico</span>
+            </div>
+            <h2 class="section-title">Lenguajes y Tecnologías</h2>
+            <p class="section-subtitle">
+                Herramientas, frameworks y lenguajes empleados en el desarrollo de software con niveles de conocimiento rigurosos y realistas.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            {% for category, cat_skills in skills_by_category.items() %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="tech-card">
+                        <h3 class="h6 text-cyan fw-bold mb-3 pb-2 border-bottom border-secondary text-uppercase">
+                            {{ category }}
+                        </h3>
+                        <div class="d-flex flex-column gap-3">
+                            {% for skill in cat_skills %}
+                                <div class="skill-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="{{ skill.icon_class }} text-cyan fs-5"></i>
+                                            <strong class="text-light small">{{ skill.name }}</strong>
+                                        </div>
+                                        <span class="text-secondary small">{{ skill.percentage }}%</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between text-secondary" style="font-size: 0.72rem;">
+                                        <span>Nivel</span>
+                                        <span>{{ skill.proficiency_level }}</span>
+                                    </div>
+                                    <div class="skill-progress-bar">
+                                        <div class="skill-progress-fill" data-percent="{{ skill.percentage }}" style="width: 0%;"></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<!-- ==========================================
+     6. SECCIÓN ÁREAS DE INTERÉS PROFESIONAL
+     ========================================== -->
+<section id="intereses" class="section-padding bg-secondary-subtle" style="background-color: var(--bg-secondary) !important;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-tag">
+                <i class="bi bi-compass"></i>
+                <span>Especialidades</span>
+            </div>
+            <h2 class="section-title">Áreas de Interés Profesional</h2>
+            <p class="section-subtitle">
+                Campos de la Ingeniería Informática donde concentro mi aprendizaje continuo e innovación tecnológica.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            {% for interest in interests %}
+                <div class="col-md-6 col-lg-3">
+                    <div class="tech-card">
+                        <div class="interest-icon-box">
+                            <i class="{{ interest.icon_class }}"></i>
+                        </div>
+                        <h3 class="h5 fw-bold text-light mb-2">{{ interest.title }}</h3>
+                        <p class="text-secondary small mb-0" style="line-height: 1.7;">
+                            {{ interest.description }}
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+
+<!-- ==========================================
+     7. SECCIÓN CONTACTO
+     ========================================== -->
+<section id="contacto" class="section-padding">
+    <div class="container">
+        <div class="text-center mb-5">
+            <div class="section-tag">
+                <i class="bi bi-chat-dots-fill"></i>
+                <span>Comunicación Directa</span>
+            </div>
+            <h2 class="section-title">Ponte en Contacto</h2>
+            <p class="section-subtitle">
+                ¿Tienes una propuesta de proyecto, consulta académica o deseas conversar sobre tecnología? Envíame un mensaje directo.
+            </p>
+        </div>
+
+        <div class="row g-4 align-items-stretch">
+            <!-- Información Directa de Contacto -->
+            <div class="col-lg-5">
+                <div class="tech-card d-flex flex-column justify-content-between h-100">
+                    <div>
+                        <h3 class="h5 fw-bold text-cyan mb-4">
+                            <i class="bi bi-send-check me-2"></i> Canales de Contacto
+                        </h3>
+
+                        {% if profile.email %}
+                            <a href="mailto:{{ profile.email }}" class="contact-info-pill">
+                                <div class="contact-icon-wrapper">
+                                    <i class="bi bi-envelope-at-fill"></i>
+                                </div>
+                                <div>
+                                    <span class="text-secondary small d-block">Correo Electrónico</span>
+                                    <strong class="text-light">{{ profile.email }}</strong>
+                                </div>
+                            </a>
+                        {% endif %}
+
+                        {% if profile.github_url %}
+                            <a href="{{ profile.github_url }}" target="_blank" rel="noopener noreferrer" class="contact-info-pill">
+                                <div class="contact-icon-wrapper">
+                                    <i class="bi bi-github"></i>
+                                </div>
+                                <div>
+                                    <span class="text-secondary small d-block">Perfil de GitHub</span>
+                                    <strong class="text-light">github.com/portlife</strong>
+                                </div>
+                            </a>
+                        {% endif %}
+
+                        {% if profile.linkedin_url %}
+                            <a href="{{ profile.linkedin_url }}" target="_blank" rel="noopener noreferrer" class="contact-info-pill">
+                                <div class="contact-icon-wrapper">
+                                    <i class="bi bi-linkedin"></i>
+                                </div>
+                                <div>
+                                    <span class="text-secondary small d-block">Perfil de LinkedIn</span>
+                                    <strong class="text-light">linkedin.com/in/portlife-estudiante</strong>
+                                </div>
+                            </a>
+                        {% endif %}
+
+                        <div class="contact-info-pill mb-0">
+                            <div class="contact-icon-wrapper">
+                                <i class="bi bi-geo-alt-fill"></i>
+                            </div>
+                            <div>
+                                <span class="text-secondary small d-block">Ubicación Actual</span>
+                                <strong class="text-light">{{ profile.location }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top border-secondary">
+                        <small class="text-muted">
+                            <i class="bi bi-shield-check text-cyan me-1"></i> Todos los mensajes se almacenan de forma segura en la base de datos relacional para su revisión en el panel administrativo.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulario de Contacto Funcional con Persistencia en BD -->
+            <div class="col-lg-7">
+                <div class="tech-card h-100">
+                    <h3 class="h5 fw-bold text-cyan mb-3">
+                        <i class="bi bi-pencil-square me-2"></i> Enviar Mensaje
+                    </h3>
+
+                    <form id="contactForm" novalidate>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="contactName" class="form-label text-secondary small fw-semibold">Nombre Completo *</label>
+                                <input type="text" class="form-control form-tech-control" id="contactName" name="name" placeholder="Ej. Juan Pérez" required minlength="2">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contactEmail" class="form-label text-secondary small fw-semibold">Correo Electrónico *</label>
+                                <input type="email" class="form-control form-tech-control" id="contactEmail" name="email" placeholder="ejemplo@correo.com" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="contactSubject" class="form-label text-secondary small fw-semibold">Asunto del Mensaje *</label>
+                                <input type="text" class="form-control form-tech-control" id="contactSubject" name="subject" placeholder="Ej. Consulta sobre proyecto web" required minlength="3">
+                            </div>
+                            <div class="col-12">
+                                <label for="contactMessage" class="form-label text-secondary small fw-semibold">Mensaje Detallado *</label>
+                                <textarea class="form-control form-tech-control" id="contactMessage" name="message" rows="5" placeholder="Escribe aquí tu consulta o comentario..." required minlength="10"></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn-electric w-100 justify-content-center py-3" id="contactSubmitBtn">
+                                    <i class="bi bi-send-fill"></i> Enviar Mensaje
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Caja de Alerta Dinámica (Confirmación sólo tras éxito en BD) -->
+                        <div id="contactFeedback" class="alert mt-3" style="display: none;" role="alert"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ==========================================
+     MODAL DE DETALLE DE PROYECTO
+     ========================================== -->
+<div class="modal fade" id="projectDetailModal" tabindex="-1" aria-labelledby="modalProjectTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content admin-modal-content">
+            <div class="modal-header admin-modal-header d-flex justify-content-between align-items-center">
+                <div>
+                    <span id="modalProjectCategory" class="badge bg-primary text-light mb-1">Categoría</span>
+                    <h3 class="modal-title h5 fw-bold text-light" id="modalProjectTitle">Detalles del Proyecto</h3>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-3">
+                    <img id="modalProjectImage" src="" alt="Vista Previa" class="img-fluid rounded border border-secondary" style="max-height: 320px; width: 100%; object-fit: cover;">
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-secondary small">Estado del Desarrollo:</span>
+                    <span id="modalProjectStatus" class="badge bg-info text-dark fw-bold">Estado</span>
+                </div>
+
+                <h4 class="h6 text-cyan fw-bold mb-2">Descripción Completa:</h4>
+                <p id="modalProjectDesc" class="text-secondary" style="line-height: 1.8;">
+                    Cargando descripción detallada...
+                </p>
+
+                <h4 class="h6 text-cyan fw-bold mb-2">Tecnologías Utilizadas:</h4>
+                <div id="modalProjectTechs" class="d-flex flex-wrap gap-2 mb-4">
+                    <!-- Badges dinámicos -->
+                </div>
+
+                <div class="d-flex gap-2 justify-content-end pt-3 border-top border-secondary">
+                    <a id="modalProjectGithub" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-glass">
+                        <i class="bi bi-github"></i> Ver Código en GitHub
+                    </a>
+                    <a id="modalProjectDemo" href="#" class="btn btn-sm btn-electric">
+                        <i class="bi bi-play-circle-fill"></i> Ver Demostración
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

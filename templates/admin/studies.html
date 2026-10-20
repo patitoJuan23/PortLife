@@ -1,0 +1,224 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Gestión de Estudios | PortLife Admin{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-light mb-1">Formación y Estudios</h1>
+        <p class="text-secondary small mb-0">
+            Administra los estudios universitarios, títulos técnicos y diplomados mostrados en la línea de tiempo.
+        </p>
+    </div>
+    <button type="button" class="btn btn-electric" data-bs-toggle="modal" data-bs-target="#createStudyModal">
+        <i class="bi bi-plus-lg me-1"></i> Añadir Estudio
+    </button>
+</div>
+
+<!-- Tabla de Estudios -->
+<div class="admin-table-container p-4">
+    <div class="table-responsive">
+        <table class="table table-custom align-middle">
+            <thead>
+                <tr>
+                    <th>Título / Carrera</th>
+                    <th>Institución</th>
+                    <th>Periodo</th>
+                    <th>Estado</th>
+                    <th>Actual</th>
+                    <th>Orden</th>
+                    <th class="text-end">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in studies %}
+                    <tr>
+                        <td>
+                            <strong class="text-light fs-6 d-block">{{ s.degree }}</strong>
+                            <span class="text-secondary small" style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
+                                {{ s.description or 'Sin descripción adicional' }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="text-cyan">{{ s.institution }}</span>
+                        </td>
+                        <td>
+                            <span class="text-secondary small">{{ s.period }}</span>
+                        </td>
+                        <td>
+                            <span class="badge {{ 'bg-success' if s.is_current else 'bg-primary' }} rounded-pill">
+                                {{ s.status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if s.is_current %}
+                                <span class="badge bg-info text-dark">En Curso</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Finalizado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-dark border border-secondary">{{ s.order }}</span>
+                        </td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <button type="button" 
+                                        class="btn btn-sm btn-glass text-cyan btn-edit-study"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editStudyModal"
+                                        data-id="{{ s.id }}"
+                                        data-degree="{{ s.degree }}"
+                                        data-institution="{{ s.institution }}"
+                                        data-period="{{ s.period }}"
+                                        data-status="{{ s.status }}"
+                                        data-current="{{ s.is_current }}"
+                                        data-description="{{ s.description or '' }}"
+                                        data-order="{{ s.order }}"
+                                        title="Editar estudio">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+                                
+                                <form method="POST" action="{{ url_for('admin.study_delete', study_id=s.id) }}" onsubmit="return confirm('¿Seguro que deseas eliminar \'{{ s.degree }}\'?');">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Eliminar estudio">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-secondary">
+                            No hay estudios registrados.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- MODAL CREAR ESTUDIO -->
+<div class="modal fade" id="createStudyModal" tabindex="-1" aria-labelledby="createStudyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content admin-modal-content">
+            <div class="modal-header admin-modal-header">
+                <h5 class="modal-title fw-bold text-light" id="createStudyModalLabel">
+                    <i class="bi bi-mortarboard text-cyan me-2"></i> Añadir Estudio o Formación
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.study_create') }}">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label text-secondary small fw-semibold">Título o Carrera *</label>
+                            <input type="text" class="form-control admin-input" name="degree" placeholder="Ej. Ingeniería Informática" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary small fw-semibold">Orden</label>
+                            <input type="number" class="form-control admin-input" name="order" value="0">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold">Institución Educativa *</label>
+                            <input type="text" class="form-control admin-input" name="institution" placeholder="Ej. Universidad Tecnológica" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold">Periodo / Años *</label>
+                            <input type="text" class="form-control admin-input" name="period" placeholder="Ej. 2022 - Actualidad" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold">Estado</label>
+                            <select class="form-select admin-input" name="status">
+                                <option value="En curso">En curso</option>
+                                <option value="Culminado">Culminado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center pt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_current" id="createStudyCurrent" checked>
+                                <label class="form-check-label text-secondary small" for="createStudyCurrent">
+                                    Estudio actualmente en curso
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small fw-semibold">Descripción y Énfasis Académico</label>
+                            <textarea class="form-control admin-input" name="description" rows="3" placeholder="Semestre actual, materias destacadas, enfoques pedagógicos..."></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer admin-modal-footer">
+                    <button type="button" class="btn btn-sm btn-glass text-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-sm btn-electric">
+                        <i class="bi bi-check-lg me-1"></i> Guardar Estudio
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- MODAL EDITAR ESTUDIO -->
+<div class="modal fade" id="editStudyModal" tabindex="-1" aria-labelledby="editStudyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content admin-modal-content">
+            <div class="modal-header admin-modal-header">
+                <h5 class="modal-title fw-bold text-light" id="editStudyModalLabel">
+                    <i class="bi bi-pencil-square text-cyan me-2"></i> Editar Estudio
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form method="POST" id="editStudyForm" action="">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label text-secondary small fw-semibold">Título o Carrera *</label>
+                            <input type="text" class="form-control admin-input" id="editStudyDegree" name="degree" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-secondary small fw-semibold">Orden</label>
+                            <input type="number" class="form-control admin-input" id="editStudyOrder" name="order">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold">Institución Educativa *</label>
+                            <input type="text" class="form-control admin-input" id="editStudyInstitution" name="institution" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold">Periodo / Años *</label>
+                            <input type="text" class="form-control admin-input" id="editStudyPeriod" name="period" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-secondary small fw-semibold">Estado</label>
+                            <select class="form-select admin-input" id="editStudyStatus" name="status">
+                                <option value="En curso">En curso</option>
+                                <option value="Culminado">Culminado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 d-flex align-items-center pt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="is_current" id="editStudyCurrent">
+                                <label class="form-check-label text-secondary small" for="editStudyCurrent">
+                                    Estudio actualmente en curso
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-secondary small fw-semibold">Descripción y Énfasis Académico</label>
+                            <textarea class="form-control admin-input" id="editStudyDescription" name="description" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer admin-modal-footer">
+                    <button type="button" class="btn btn-sm btn-glass text-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-sm btn-electric">
+                        <i class="bi bi-save me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

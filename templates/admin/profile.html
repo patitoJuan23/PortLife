@@ -1,0 +1,135 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block title %}Editar Información del Perfil | PortLife Admin{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="h3 fw-bold text-light mb-1">Información del Perfil</h1>
+        <p class="text-secondary small mb-0">
+            Actualiza tus datos personales, trayectoria académica, objetivos y enlaces sociales del portafolio.
+        </p>
+    </div>
+    <a href="{{ url_for('public.index') }}#sobre-mi" target="_blank" class="btn btn-sm btn-glass text-cyan">
+        <i class="bi bi-eye me-1"></i> Ver en el Portafolio
+    </a>
+</div>
+
+<form method="POST" action="{{ url_for('admin.profile_view') }}">
+    <div class="row g-4">
+        <!-- Columna Izquierda: Identidad y Datos Académicos -->
+        <div class="col-lg-6">
+            <div class="admin-table-container p-4 mb-4">
+                <h3 class="h5 fw-bold text-cyan mb-3">
+                    <i class="bi bi-person-circle me-2"></i> Datos Principales
+                </h3>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-semibold">Nombre Completo *</label>
+                    <input type="text" class="form-control admin-input" name="full_name" value="{{ profile.full_name }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-semibold">Título Profesional / Subtítulo *</label>
+                    <input type="text" class="form-control admin-input" name="title" value="{{ profile.title }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-semibold">Presentación Breve (Hero) *</label>
+                    <textarea class="form-control admin-input" name="short_intro" rows="2" required>{{ profile.short_intro }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-semibold">Ruta / URL del Avatar o Fotografía *</label>
+                    <input type="text" class="form-control admin-input" name="avatar_url" value="{{ profile.avatar_url }}" required>
+                    <small class="text-secondary" style="font-size: 0.72rem;">Ruta local por defecto: <code>/static/img/student_avatar.jpg</code></small>
+                </div>
+            </div>
+
+            <div class="admin-table-container p-4">
+                <h3 class="h5 fw-bold text-cyan mb-3">
+                    <i class="bi bi-mortarboard-fill me-2"></i> Datos Universitarios
+                </h3>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-semibold">Universidad *</label>
+                    <input type="text" class="form-control admin-input" name="university" value="{{ profile.university }}" required>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-7">
+                        <label class="form-label text-secondary small fw-semibold">Carrera *</label>
+                        <input type="text" class="form-control admin-input" name="career" value="{{ profile.career }}" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label text-secondary small fw-semibold">Semestre *</label>
+                        <input type="text" class="form-control admin-input" name="semester" value="{{ profile.semester }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label text-secondary small fw-semibold">Ciudad y País *</label>
+                    <input type="text" class="form-control admin-input" name="location" value="{{ profile.location }}" required>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Biografía, Objetivos y Canales -->
+        <div class="col-lg-6">
+            <div class="admin-table-container p-4 mb-4">
+                <h3 class="h5 fw-bold text-cyan mb-3">
+                    <i class="bi bi-file-text-fill me-2"></i> Biografía & Objetivos
+                </h3>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-semibold">Descripción Personal & Biografía *</label>
+                    <textarea class="form-control admin-input" name="bio" rows="4" required>{{ profile.bio }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-semibold">Objetivos Profesionales *</label>
+                    <textarea class="form-control admin-input" name="objectives" rows="3" required>{{ profile.objectives }}</textarea>
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label text-secondary small fw-semibold">Enfoque e Intereses de Ingeniería *</label>
+                    <textarea class="form-control admin-input" name="interests_text" rows="2" required>{{ profile.interests_text }}</textarea>
+                </div>
+            </div>
+
+            <div class="admin-table-container p-4 mb-4">
+                <h3 class="h5 fw-bold text-cyan mb-3">
+                    <i class="bi bi-share-fill me-2"></i> Canales y Redes
+                </h3>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small fw-semibold">Correo Electrónico *</label>
+                        <input type="email" class="form-control admin-input" name="email" value="{{ profile.email }}" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small fw-semibold">Teléfono de Contacto</label>
+                        <input type="text" class="form-control admin-input" name="phone" value="{{ profile.phone or '' }}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-semibold">Enlace de GitHub</label>
+                    <input type="text" class="form-control admin-input" name="github_url" value="{{ profile.github_url or '' }}">
+                </div>
+
+                <div class="mb-0">
+                    <label class="form-label text-secondary small fw-semibold">Enlace de LinkedIn</label>
+                    <input type="text" class="form-control admin-input" name="linkedin_url" value="{{ profile.linkedin_url or '' }}">
+                </div>
+            </div>
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-electric py-3">
+                    <i class="bi bi-save me-1"></i> Guardar Cambios del Perfil
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
