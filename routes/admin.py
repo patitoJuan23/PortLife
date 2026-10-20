@@ -93,6 +93,8 @@ def profile_view():
 
     if request.method == 'POST':
         profile.full_name = request.form.get('full_name', '').strip() or profile.full_name
+        profile.document_id = request.form.get('document_id', '').strip() or profile.document_id
+        profile.age = request.form.get('age', '').strip() or profile.age
         profile.title = request.form.get('title', '').strip() or profile.title
         profile.university = request.form.get('university', '').strip() or profile.university
         profile.career = request.form.get('career', '').strip() or profile.career

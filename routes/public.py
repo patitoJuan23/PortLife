@@ -1,21 +1,37 @@
 import re
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
-from models import db, Profile, Project, Study, Skill, InterestArea, ContactMessage
+from flask_login import login_user, logout_user, current_user, login_required
+from models import db, User, Profile, Project, Study, Skill, InterestArea, ContactMessage
 
 public_bp = Blueprint('public', __name__)
 
 EMAIL_REGEX = r'^[\w\.-]+@[\w\.-]+\.\w+$'
 
+# ==========================================
+# RUTAS DE INICIO Y AUTENTICACIÓN
+# ==========================================
+
 @public_bp.route('/')
 def index():
-    """Ruta principal del portafolio público."""
+    """Portal de inicio de la aplicación: Registro o Inicio de Sesión."""
+    if current_user.is_authenticated:
+        return redirect(url_for('public.portfolio'))
+    
+    profile = Profile.query.first()
+    active_tab = request.args.get('tab', 'login')
+    return render_template('portal_auth.html', profile=profile, active_tab=active_tab)
+
+
+@public_bp.route('/portafolio')
+def portfolio():
+    """Vista principal completa del portafolio profesional de Juan Miguel Duarte."""
     profile = Profile.query.first()
     projects = Project.query.order_by(Project.order.asc(), Project.created_at.desc()).all()
     studies = Study.query.order_by(Study.order.asc()).all()
     skills = Skill.query.order_by(Skill.order.asc()).all()
     interests = InterestArea.query.order_by(InterestArea.order.asc()).all()
 
-    # Agrupar habilidades por categoría para mostrarlas organizadas
+    # Agrupar habilidades por categoría para visualización en columnas
     skills_by_category = {}
     for sk in skills:
         skills_by_category.setdefault(sk.category, []).append(sk)
@@ -30,6 +46,115 @@ def index():
         interests=interests
     )
 
+
+@public_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    """Inicio de sesión para usuarios y administradores."""
+    if current_user.is_authenticated:
+        return redirect(url_for('public.portfolio'))
+
+    if request.method == 'POST':
+        login_id = request.form.get('username', '').strip()
+        password = request.form.get('password', '')
+        remember = bool(request.form.get('remember'))
+
+        if not login_id or not password:
+            flash("Por favor ingresa tu usuario o correo electrónico y tu contraseña.", "warning")
+            return redirect(url_for('public.index', tab='login'))
+
+        # Buscar por username o por email
+        user = User.query.filter(
+            (User.username == login_id) | (User.email == login_id)
+        ).first()
+
+        if user and user.check_password(password):
+            login_user(user, remember=remember)
+            display_name = user.full_name or user.username
+            flash(f"¡Bienvenido de nuevo a PortLife, {display_name}!", "success")
+            
+            next_page = request.args.get('next')
+            if next_page:
+                return redirect(next_page)
+            if user.is_admin:
+                return redirect(url_for('admin.dashboard'))
+            return redirect(url_for('public.portfolio'))
+        else:
+            flash("Credenciales incorrectas. Verifica tu usuario/correo y contraseña.", "danger")
+            return redirect(url_for('public.index', tab='login'))
+
+    return redirect(url_for('public.index', tab='login'))
+
+
+@public_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    """Registro de nuevos usuarios en el sistema PortLife."""
+    if current_user.is_authenticated:
+        return redirect(url_for('public.portfolio'))
+
+    if request.method == 'POST':
+        full_name = request.form.get('full_name', '').strip()
+        username = request.form.get('username', '').strip().lower()
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        errors = []
+        if not full_name or len(full_name) < 2:
+            errors.append("Ingresa tu nombre completo (mínimo 2 caracteres).")
+        if not username or len(username) < 3 or not re.match(r'^[a-zA-Z0-9_.-]+$', username):
+            errors.append("El usuario debe tener al menos 3 caracteres alfanuméricos.")
+        if not email or not re.match(EMAIL_REGEX, email):
+            errors.append("Por favor ingresa un correo electrónico válido.")
+        if not password or len(password) < 4:
+            errors.append("La contraseña debe tener al menos 4 caracteres.")
+        if password != confirm_password:
+            errors.append("Las contraseñas no coinciden.")
+
+        # Verificar unicidad
+        if User.query.filter_by(username=username).first():
+            errors.append("El nombre de usuario ya está registrado. Elige otro.")
+        if User.query.filter_by(email=email).first():
+            errors.append("Ya existe una cuenta con este correo electrónico.")
+
+        if errors:
+            for err in errors:
+                flash(err, "danger")
+            return redirect(url_for('public.index', tab='register'))
+
+        try:
+            new_user = User(
+                username=username,
+                email=email,
+                full_name=full_name,
+                role='user'
+            )
+            new_user.set_password(password)
+            db.session.add(new_user)
+            db.session.commit()
+
+            # Autenticar automáticamente al nuevo usuario
+            login_user(new_user)
+            flash(f"¡Registro exitoso! Bienvenido a PortLife, {full_name}.", "success")
+            return redirect(url_for('public.portfolio'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error al registrar la cuenta: {str(e)}", "danger")
+            return redirect(url_for('public.index', tab='register'))
+
+    return redirect(url_for('public.index', tab='register'))
+
+
+@public_bp.route('/logout')
+def logout():
+    """Cierre de sesión de usuario y redirección al inicio."""
+    logout_user()
+    flash("Has cerrado sesión exitosamente.", "info")
+    return redirect(url_for('public.index'))
+
+
+# ==========================================
+# FORMULARIO DE CONTACTO
+# ==========================================
 
 @public_bp.route('/contacto', methods=['POST'])
 def submit_contact():
@@ -48,7 +173,6 @@ def submit_contact():
         subject = request.form.get('subject', '').strip()
         message = request.form.get('message', '').strip()
 
-    # Validaciones en Backend
     errors = []
     if not name or len(name) < 2:
         errors.append("El nombre es requerido y debe tener al menos 2 caracteres.")
@@ -64,7 +188,7 @@ def submit_contact():
             return jsonify({"success": False, "errors": errors}), 400
         for err in errors:
             flash(err, "danger")
-        return redirect(url_for('public.index') + "#contacto")
+        return redirect(url_for('public.portfolio') + "#contacto")
 
     try:
         new_msg = ContactMessage(
@@ -85,14 +209,14 @@ def submit_contact():
             }), 201
         
         flash(success_text, "success")
-        return redirect(url_for('public.index') + "#contacto")
+        return redirect(url_for('public.portfolio') + "#contacto")
     except Exception as e:
         db.session.rollback()
         error_msg = "Ocurrió un error al procesar el mensaje. Por favor intenta de nuevo más tarde."
         if is_ajax:
             return jsonify({"success": False, "errors": [error_msg]}), 500
         flash(error_msg, "danger")
-        return redirect(url_for('public.index') + "#contacto")
+        return redirect(url_for('public.portfolio') + "#contacto")
 
 
 # ==========================================

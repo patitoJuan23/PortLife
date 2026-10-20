@@ -9,13 +9,15 @@ def utc_now():
     return datetime.now(timezone.utc)
 
 class User(UserMixin, db.Model):
-    """Modelo para usuarios administradores del panel."""
+    """Modelo para usuarios administradores y registrados del sistema."""
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, nullable=False, index=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(256), nullable=False)
+    role = db.Column(db.String(20), default="admin")  # 'admin' o 'user'
+    full_name = db.Column(db.String(120), nullable=True)
     created_at = db.Column(db.DateTime, default=utc_now)
 
     def set_password(self, password):
@@ -26,6 +28,10 @@ class User(UserMixin, db.Model):
         """Valida una contraseña contra su hash."""
         return check_password_hash(self.password_hash, password)
 
+    @property
+    def is_admin(self):
+        return self.role == 'admin' or self.username == 'admin'
+
     def __repr__(self):
         return f'<User {self.username}>'
 
@@ -35,18 +41,20 @@ class Profile(db.Model):
     __tablename__ = 'profiles'
 
     id = db.Column(db.Integer, primary_key=True)
-    full_name = db.Column(db.String(120), nullable=False, default="Alex Rendón")
+    full_name = db.Column(db.String(120), nullable=False, default="Juan Miguel Duarte Castañeda")
+    document_id = db.Column(db.String(50), nullable=False, default="C.C 1028140776")
+    age = db.Column(db.String(20), nullable=False, default="19 años")
     title = db.Column(db.String(150), nullable=False, default="Estudiante de Ingeniería Informática | Full Stack Developer")
     university = db.Column(db.String(150), nullable=False, default="Universidad Tecnológica")
     career = db.Column(db.String(120), nullable=False, default="Ingeniería Informática")
     semester = db.Column(db.String(50), nullable=False, default="6.° Semestre")
-    short_intro = db.Column(db.Text, nullable=False, default="Desarrollo aplicaciones web modernas, limpias y funcionales con enfoque en arquitectura sólida y código mantenible.")
-    bio = db.Column(db.Text, nullable=False, default="Estudiante apasionado por la ingeniería de software, el diseño de sistemas y las aplicaciones web full stack. Con formación rigurosa en algoritmia, bases de datos relacionales y buenas prácticas de desarrollo.")
-    objectives = db.Column(db.Text, nullable=False, default="Contribuir al diseño y desarrollo de soluciones de software escalables, aplicando conocimientos teóricos y metodológicos en entornos colaborativos y de alta exigencia.")
+    short_intro = db.Column(db.Text, nullable=False, default="Estudiante de 19 años de Ingeniería Informática enfocado en arquitectura de software, backend con Python/Flask e interfaces modernas.")
+    bio = db.Column(db.Text, nullable=False, default="Soy Juan Miguel Duarte Castañeda, estudiante de 19 años de Ingeniería Informática radicado en La Estrella, Antioquia. Apasionado por la ingeniería de software, el diseño de sistemas y las aplicaciones full stack con bases sólidas en algoritmia y bases de datos relacionales.")
+    objectives = db.Column(db.Text, nullable=False, default="Consolidar mi formación profesional como Ingeniero Informático aportando valor técnico en el desarrollo de plataformas seguras, escalables y con código mantenible.")
     interests_text = db.Column(db.Text, nullable=False, default="Desarrollo Web Full Stack, Arquitectura de Software, Inteligencia Artificial, Automatización de Procesos y Ciberseguridad.")
-    email = db.Column(db.String(120), nullable=False, default="alex.rendon@universidad.edu.co")
+    email = db.Column(db.String(120), nullable=False, default="juan.duarte@universidad.edu.co")
     phone = db.Column(db.String(50), nullable=True, default="+57 312 456 7890")
-    location = db.Column(db.String(100), nullable=False, default="Medellín, Colombia")
+    location = db.Column(db.String(100), nullable=False, default="La Estrella, Antioquia")
     github_url = db.Column(db.String(255), nullable=True, default="https://github.com/portlife")
     linkedin_url = db.Column(db.String(255), nullable=True, default="https://linkedin.com/in/portlife-estudiante")
     avatar_url = db.Column(db.String(255), nullable=False, default="/static/img/student_avatar.jpg")
@@ -57,6 +65,8 @@ class Profile(db.Model):
         return {
             "id": self.id,
             "full_name": self.full_name,
+            "document_id": self.document_id,
+            "age": self.age,
             "title": self.title,
             "university": self.university,
             "career": self.career,

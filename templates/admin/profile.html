@@ -29,6 +29,17 @@
                     <input type="text" class="form-control admin-input" name="full_name" value="{{ profile.full_name }}" required>
                 </div>
 
+                <div class="row g-2 mb-3">
+                    <div class="col-md-7">
+                        <label class="form-label text-secondary small fw-semibold">Documento de Identidad (C.C) *</label>
+                        <input type="text" class="form-control admin-input" name="document_id" value="{{ profile.document_id }}" required>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label text-secondary small fw-semibold">Edad *</label>
+                        <input type="text" class="form-control admin-input" name="age" value="{{ profile.age }}" required>
+                    </div>
+                </div>
+
                 <div class="mb-3">
                     <label class="form-label text-secondary small fw-semibold">Título Profesional / Subtítulo *</label>
                     <input type="text" class="form-control admin-input" name="title" value="{{ profile.title }}" required>

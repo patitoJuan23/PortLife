@@ -31,7 +31,13 @@
                 <!-- Datos académicos rápidos -->
                 <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start mb-4">
                     <span class="badge bg-secondary-subtle text-light border border-secondary p-2 px-3 rounded-pill">
-                        <i class="bi bi-buildings me-1 text-cyan"></i> {{ profile.university }}
+                        <i class="bi bi-person-vcard me-1 text-cyan"></i> {{ profile.document_id }}
+                    </span>
+                    <span class="badge bg-secondary-subtle text-light border border-secondary p-2 px-3 rounded-pill">
+                        <i class="bi bi-geo-alt me-1 text-cyan"></i> {{ profile.location }}
+                    </span>
+                    <span class="badge bg-secondary-subtle text-light border border-secondary p-2 px-3 rounded-pill">
+                        <i class="bi bi-cake2 me-1 text-cyan"></i> {{ profile.age }}
                     </span>
                     <span class="badge bg-secondary-subtle text-light border border-secondary p-2 px-3 rounded-pill">
                         <i class="bi bi-cpu me-1 text-cyan"></i> {{ profile.career }}
@@ -121,13 +127,25 @@
             <div class="col-lg-4">
                 <div class="tech-card">
                     <h3 class="h5 fw-bold mb-4 text-cyan border-bottom pb-2 border-secondary">
-                        <i class="bi bi-mortarboard me-2"></i> Datos Académicos
+                        <i class="bi bi-mortarboard me-2"></i> Datos Académicos & Personales
                     </h3>
 
                     <ul class="list-unstyled mb-4">
                         <li class="mb-3">
                             <span class="text-secondary small d-block">Estudiante</span>
                             <strong class="text-light fs-6">{{ profile.full_name }}</strong>
+                        </li>
+                        <li class="mb-3">
+                            <span class="text-secondary small d-block">Documento de Identidad</span>
+                            <strong class="text-cyan fs-6">{{ profile.document_id }}</strong>
+                        </li>
+                        <li class="mb-3">
+                            <span class="text-secondary small d-block">Edad</span>
+                            <span class="text-light fs-6">{{ profile.age }}</span>
+                        </li>
+                        <li class="mb-3">
+                            <span class="text-secondary small d-block">Ubicación</span>
+                            <span class="text-light"><i class="bi bi-geo-alt text-cyan me-1"></i> {{ profile.location }}</span>
                         </li>
                         <li class="mb-3">
                             <span class="text-secondary small d-block">Carrera Universitaria</span>
@@ -140,10 +158,6 @@
                         <li class="mb-3">
                             <span class="text-secondary small d-block">Nivel Académico</span>
                             <span class="badge bg-primary text-light px-3 py-1">{{ profile.semester }}</span>
-                        </li>
-                        <li class="mb-3">
-                            <span class="text-secondary small d-block">Ubicación</span>
-                            <span class="text-light"><i class="bi bi-geo-alt text-cyan me-1"></i> {{ profile.location }}</span>
                         </li>
                     </ul>
 

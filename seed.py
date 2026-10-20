@@ -27,25 +27,27 @@ def seed_database(app):
         # 2. Perfil del estudiante
         if not Profile.query.first():
             profile = Profile(
-                full_name="Alex Rendón",
+                full_name="Juan Miguel Duarte Castañeda",
+                document_id="C.C 1028140776",
+                age="19 años",
                 title="Estudiante de Ingeniería Informática | Desarrollador Full Stack",
                 university="Universidad Tecnológica",
                 career="Ingeniería Informática",
                 semester="6.° Semestre",
-                short_intro="Estudiante universitario enfocado en desarrollo web moderno, arquitectura de software y creación de soluciones prácticas con Python, Flask y tecnologías web.",
-                bio="Soy estudiante de 6.° semestre de Ingeniería Informática con gran vocación por la ingeniería de software y el desarrollo full stack. Cuento con bases sólidas en algoritmia, bases de datos relacionales, programación estructurada y orientada a objetos. Me apasiona transformar requerimientos en plataformas estables, bien documentadas y con una excelente experiencia de usuario.",
-                objectives="Consolidar mi formación como Ingeniero Informático participando en proyectos desafiantes donde pueda aplicar patrones de diseño, desarrollo backend con Python/Flask, gestión de bases de datos y buenas prácticas de seguridad e interfaces de usuario.",
+                short_intro="Estudiante de 19 años de Ingeniería Informática radicado en La Estrella, Antioquia. Enfocado en desarrollo web moderno, arquitectura de software y soluciones con Python, Flask y tecnologías full stack.",
+                bio="Soy Juan Miguel Duarte Castañeda, tengo 19 años y resido en La Estrella, Antioquia. Estudiante de 6.° semestre de Ingeniería Informática con sólida vocación hacia el desarrollo de software y la computación aplicada. Cuento con bases rigurosas en algoritmia, diseño de bases de datos relacionales, programación orientada a objetos y arquitectura web limpia.",
+                objectives="Consolidar mi formación profesional como Ingeniero Informático aportando valor técnico en el desarrollo de plataformas seguras, escalables y con código mantenible.",
                 interests_text="Desarrollo Web Full Stack, Arquitectura de Software, Inteligencia Artificial, Automatización de Procesos y Ciberseguridad.",
-                email="alex.rendon@universidad.edu.co",
+                email="juan.duarte@universidad.edu.co",
                 phone="+57 312 456 7890",
-                location="Medellín, Colombia",
+                location="La Estrella, Antioquia",
                 github_url="https://github.com/portlife",
                 linkedin_url="https://linkedin.com/in/portlife-estudiante",
                 avatar_url="/static/img/student_avatar.jpg",
                 cv_url=""
             )
             db.session.add(profile)
-            print("[Seed] Perfil inicial creado.")
+            print("[Seed] Perfil inicial de Juan Miguel Duarte Castañeda creado.")
 
         # 3. Proyectos requeridos
         if not Project.query.first():
